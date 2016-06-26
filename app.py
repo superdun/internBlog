@@ -9,6 +9,7 @@ app.config.from_pyfile('localConfig.py')
 print app.config['MYSQL_DATABASE_USER']
 db = SQLAlchemy(app)
 
+
 @app.route('/')
 def hello_world():
     return 'index'
@@ -27,6 +28,7 @@ def datePage(datetime):
 @app.route('/post/<postname>')
 def postPage(postname):
     return 'page of %s' % postname
+
 
 if __name__ == '__main__':
     app.run()
