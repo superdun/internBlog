@@ -25,7 +25,7 @@ class Posts(Base):
     status = Column(String)
 
 engine = create_engine(
-    'mysql+mysqlconnector://root:password@localhost:3306/internblog')
+    'mysql+mysqlconnector://root:password@localhost:3306/internBlog')
 
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
