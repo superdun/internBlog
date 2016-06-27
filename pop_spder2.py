@@ -4,6 +4,7 @@ from email.parser import Parser
 from email.header import decode_header
 from email.utils import parseaddr
 import dbORM as db
+from sqlalchemy import and_
 
 
 def get_info(msg):
@@ -63,12 +64,16 @@ def store_to_db(info):
     if len(user) == 0:
         db.session.add(db.Users(name=info['username']))
         db.session.commit()
+    have_post = db.session.query(db.Posts).filter(
+        and_(db.Posts.date == info['date'], db.Posts.title == info['username'])).all()
+    if len(have_post) != 0:
+        print have_post[0].title
+        return 'UPTODATE'
     db.session.add(db.Posts(body=info['content'], date=info['date'], status='published', title=info[
                    'username'], authorId=db.session.query(db.Users).filter_by(name=info['username']).one().id))
     db.session.commit()
     db.session.close()
-
-
+    return 'CONTINUE'
 
 if __name__ == "__main__":
     email = "lidun@wallstreetcn.com"
@@ -87,13 +92,14 @@ if __name__ == "__main__":
 
     msg_list = []
     # print(mails)
-    for i in range(1, len(mails) + 1):
-        print 'reading email list %d/%d' % (i, posts_amount)
+    for i in range(len(mails), 1, -1):
+        print 'reading email list %d/%d' % (len(mails)+1-i, posts_amount)
         resp, lines, octets = server.retr(i)
         msg_content = '\r\n'.join(lines)
         msg = Parser().parsestr(msg_content)
         info = get_info(msg)
-        # store_to_db(info)
-
-        print 'done'
+        if store_to_db(info) == 'UPTODATE':
+            print 'all done!'
+            break
+        print '%d/%d done' % (len(mails)+1-i, posts_amount)        
     server.quit()

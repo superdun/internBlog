@@ -60,37 +60,43 @@ def guess_charset(msg):
 
 
 def store_to_db(info):
-    user = db.session.query(db.Users).filter_by(name=info['username']).all()
-    if len(user) == 0:
+
+    have_user = db.session.query(db.Users).filter_by(
+        name=info['username']).all()
+    if len(have_user) == 0:
         db.session.add(db.Users(name=info['username']))
         db.session.commit()
-    #date=
-    db.session.add(db.Posts(body=info['content'], date=info['date'], status='published', title=info['username'], authorId=db.session.query(db.Users).filter_by(name=info['username']).one().id))
+    have_post = db.session.query(db.Posts).filter(db.and_(db.Posts.date==info['date'],db.Posts.title==info['username'])).all()
+    if len(have_post) != 0:
+        return 'UPTODATE'
+    db.session.add(db.Posts(body=info['content'], date=info['date'], status='published', title=info[
+                   'username'], authorId=db.session.query(db.Users).filter_by(name=info['username']).one().id))
     db.session.commit()
     db.session.close()
-
+    return 'CONTINUE'
 if __name__ == "__main__":
-    email="lidun@wallstreetcn.com"
-    password='Qw96163'
-    pop3_server='pop.exmail.qq.com'
+    email = "lidun@wallstreetcn.com"
+    password = 'Qw96163'
+    pop3_server = 'pop.exmail.qq.com'
 
-    server=poplib.POP3(pop3_server)
+    server = poplib.POP3(pop3_server)
 
     print(server.getwelcome())
 
     server.user(email)
     server.pass_(password)
-    posts_amount, size=server.stat()
+    posts_amount, size = server.stat()
 
-    resp, mails, octets=server.list()
-    msg_list=[]
+    resp, mails, octets = server.list()
+    msg_list = []
     # print(mails)
     for i in range(1, len(mails) + 1):
         print 'reading email list %d/%d' % (i, posts_amount)
-        resp, lines, octets=server.retr(i)
-        msg_content='\r\n'.join(lines)
-        msg=Parser().parsestr(msg_content)
-        info=get_info(msg)
-        store_to_db(info)
-        print 'done'
+        resp, lines, octets = server.retr(i)
+        msg_content = '\r\n'.join(lines)
+        msg = Parser().parsestr(msg_content)
+        info = get_info(msg)
+        if store_to_db(info) == 'UPTODATE':
+            i = len(mails) + 1
+        print '%d/%d done' % (i, posts_amount)
     server.quit()
