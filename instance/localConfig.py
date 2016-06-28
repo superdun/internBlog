@@ -1,8 +1,5 @@
 from flask import Flask
 
-MYSQL_DATABASE_HOST = '127.0.0.1'
-MYSQL_DATABASE_PORT = 3306
-MYSQL_DATABASE_USER = 'root'
-MYSQL_DATABASE_PASSWORD = 'password'
-MYSQL_DATABASE_DB = 'internBlog'
-MYSQL_DATABASE_CHARSET	= 'utf-8'
+
+SQLALCHEMY_DATABASE_URI='mysql+mysqlconnector://root:password@localhost:3306/internBlog'
+SQLALCHEMY_TRACK_MODIFICATIONS=False

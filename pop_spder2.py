@@ -1,5 +1,6 @@
 import poplib
 import email
+import time
 from email.parser import Parser
 from email.header import decode_header
 from email.utils import parseaddr
@@ -14,6 +15,9 @@ def get_info(msg):
     name = decode_str(hdr)
     user = u'%s' % name
     date = decode_str(msg.get('Date', ''))
+    if decode_str(msg.get('Date', '')):
+        date = date_trans(decode_str(msg.get('Date', '')))
+    title= decode_str(msg.get('Subject', ''))
     content = ''
     if (msg.is_multipart()):
 
@@ -35,8 +39,8 @@ def get_info(msg):
                 content = content.decode(charset, 'ignore')
         else:
             content = 'error'
-        return {'username': user, 'date': date, 'content': content}
-    return {'username': user, 'date': date, 'content': content}
+        return {'username': user, 'date': date, 'content': content,'title':title}
+    return {'username': user, 'date': date, 'content': content,'title':title}
 
 
 def decode_str(s):
@@ -58,6 +62,13 @@ def guess_charset(msg):
     return charset
 
 
+def date_trans(timeStr):
+    date = timeStr[:-6]
+    date_tuple = time.strptime(date, '%a, %d %b %Y %H:%M:%S')
+    date_format = time.strftime("%Y-%m-%d", date_tuple)
+    return date_format
+
+
 def store_to_db(info):
 
     user = db.session.query(db.Users).filter_by(name=info['username']).all()
@@ -65,12 +76,12 @@ def store_to_db(info):
         db.session.add(db.Users(name=info['username']))
         db.session.commit()
     have_post = db.session.query(db.Posts).filter(
-        and_(db.Posts.date == info['date'], db.Posts.title == info['username'])).all()
+        and_(db.Posts.date == info['date'], db.Posts.title == info['title'])).all()
     if len(have_post) != 0:
         print have_post[0].title
         return 'UPTODATE'
     db.session.add(db.Posts(body=info['content'], date=info['date'], status='published', title=info[
-                   'username'], authorId=db.session.query(db.Users).filter_by(name=info['username']).one().id))
+                   'title'], authorId=db.session.query(db.Users).filter_by(name=info['username']).one().id))
     db.session.commit()
     db.session.close()
     return 'CONTINUE'
@@ -92,8 +103,8 @@ if __name__ == "__main__":
 
     msg_list = []
     # print(mails)
-    for i in range(len(mails), 1, -1):
-        print 'reading email list %d/%d' % (len(mails)+1-i, posts_amount)
+    for i in range(len(mails), 0, -1):
+        print 'reading email list %d/%d' % (len(mails) + 1 - i, posts_amount)
         resp, lines, octets = server.retr(i)
         msg_content = '\r\n'.join(lines)
         msg = Parser().parsestr(msg_content)
@@ -101,5 +112,5 @@ if __name__ == "__main__":
         if store_to_db(info) == 'UPTODATE':
             print 'all done!'
             break
-        print '%d/%d done' % (len(mails)+1-i, posts_amount)        
+        print '%d/%d done' % (len(mails) + 1 - i, posts_amount)
     server.quit()
