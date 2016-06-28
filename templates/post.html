@@ -1,0 +1,18 @@
+{%extends "base.html"%}
+	{% block title %}
+	HOME
+	{% endblock %}
+	{% block content %}
+		<h1 align="center">
+			{{post.title}}
+		</h1>
+		<div>
+			<a href="{{url_for('userPage',authorId=post.authorId)}}" align="left">{{post.title}}</a>
+			<a href="{{url_for('datePage',date=post.date)}}">{{post.date}}</a>
+		</div>
+		<div>
+			<p>
+				{{post.body}}
+			</p>
+		</div>
+	{% endblock %}

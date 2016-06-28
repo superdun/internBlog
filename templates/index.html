@@ -1,0 +1,30 @@
+{%extends "base.html"%}
+	{% block title %}
+	HOME
+	{% endblock %}
+	{% block content %}
+	{{ pagination.info }}
+	{{ pagination.links }}
+	{% for date in post%}
+		<a href="{{url_for('datePage',date=date)}}">
+			{{date}}
+		</a>
+		{% for item in post[date] %}
+			<div>
+				<div>
+				<a href="{{url_for('postPage',postId=item['id'])}}">
+					{{item['title']}}          
+				</a>
+				<br>
+				<a href="{{url_for('userPage',authorId=item['authorId'])}}">
+					{{item['user_name']}}
+				</a>
+				</div>
+				<div>
+					{{item['body']}}
+				</div>
+			</div>
+			
+		{% endfor %}
+	{% endfor %}
+	{% endblock %}

@@ -1,0 +1,20 @@
+{%extends "base.html"%}
+	{% block title %}
+	HOME
+	{% endblock %}
+	{% block content %}
+		<h1 align="center">
+			{{user_info.name}}-----{{user_info.department}}-----{{user_info.team}}
+		</h1>
+		{% for item in post %}
+		<div>
+			<a href="{{url_for('datePage',date=item.date)}}">{{item.date}}</a>
+			<a href="{{url_for('postPage',postId=item.id)}}">{{item.title}}</a>
+		</div>
+		<div>
+			<p>
+				{{item.body}}
+			</p>
+		</div>
+		{%endfor%}
+	{% endblock %}

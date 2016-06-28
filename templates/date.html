@@ -1,0 +1,20 @@
+{%extends "base.html"%}
+	{% block title %}
+	HOME
+	{% endblock %}
+	{% block content %}
+		<h1 align="center">
+			{{post[0].date}} 实习日报汇总
+		</h1>
+		{%for item in post %}
+		<div>
+			<a href="{{url_for('userPage',authorId=item.authorId)}}">{{item.title}}</a>
+		</div>
+		
+		<div>
+			<p>
+				{{item.body}}
+			</p>
+		</div>
+		{% endfor %}
+	{% endblock %}
