@@ -17,7 +17,7 @@ def get_info(msg):
     date = decode_str(msg.get('Date', ''))
     if decode_str(msg.get('Date', '')):
         date = date_trans(decode_str(msg.get('Date', '')))
-    title= decode_str(msg.get('Subject', ''))
+    title = decode_str(msg.get('Subject', ''))
     content = ''
     if (msg.is_multipart()):
 
@@ -39,8 +39,8 @@ def get_info(msg):
                 content = content.decode(charset, 'ignore')
         else:
             content = 'error'
-        return {'username': user, 'date': date, 'content': content,'title':title}
-    return {'username': user, 'date': date, 'content': content,'title':title}
+        return {'username': user, 'date': date, 'content': content, 'title': title}
+    return {'username': user, 'date': date, 'content': content, 'title': title}
 
 
 def decode_str(s):
@@ -76,7 +76,7 @@ def store_to_db(info):
         db.session.add(db.Users(name=info['username']))
         db.session.commit()
     have_post = db.session.query(db.Posts).filter(
-        and_(db.Posts.date == info['date'], db.Posts.title == info['title'])).all()
+        and_(db.Posts.date == info['date'], db.Posts.body == info['content'])).all()
     if len(have_post) != 0:
         print have_post[0].title
         return 'UPTODATE'
@@ -103,8 +103,8 @@ if __name__ == "__main__":
 
     msg_list = []
     # print(mails)
-    for i in range(len(mails), 0, -1):
-        print 'reading email list %d/%d' % (len(mails) + 1 - i, posts_amount)
+    for i in range(1, len(mails)+1):
+        print 'reading email list %d/%d' % (i, posts_amount)
         resp, lines, octets = server.retr(i)
         msg_content = '\r\n'.join(lines)
         msg = Parser().parsestr(msg_content)
@@ -112,5 +112,5 @@ if __name__ == "__main__":
         if store_to_db(info) == 'UPTODATE':
             print 'all done!'
             break
-        print '%d/%d done' % (len(mails) + 1 - i, posts_amount)
+        print '%d/%d done' % (i, posts_amount)
     server.quit()

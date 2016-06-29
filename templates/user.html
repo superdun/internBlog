@@ -3,6 +3,8 @@
 	HOME
 	{% endblock %}
 	{% block content %}
+	{{ pagination.info }}
+	{{ pagination.links }}
 		<h1 align="center">
 			{{user_info.name}}-----{{user_info.department}}-----{{user_info.team}}
 		</h1>
@@ -17,4 +19,6 @@
 			</p>
 		</div>
 		{%endfor%}
+	
+	{{ pagination.links }}
 	{% endblock %}

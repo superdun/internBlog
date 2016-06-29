@@ -1,15 +1,17 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from flask import render_template, url_for,request
+from flask import render_template, url_for, request
 from flask_sqlalchemy import SQLAlchemy
 import time
 from flask.ext.paginate import Pagination
+from sqlalchemy import desc
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_object('config')
 
 app.config.from_pyfile('localConfig.py')
 db = SQLAlchemy(app)
+per_page = 30
 
 
 class users(db.Model):
@@ -42,10 +44,10 @@ class posts(db.Model):
         self.status = status
 
 
-@app.route('/')
-def hello_world():
-	#page
+def pageControl(query):
+    per_page = 30
     search = False
+    total = len(query.all())
     q = request.args.get('q')
     if q:
         search = True
@@ -54,33 +56,45 @@ def hello_world():
     except ValueError:
         page = 1
 
-    
+    return [query.paginate(page, per_page, False).items, Pagination(page=page, total=total, bs_version=3,
+                                                                    search=search, per_page=per_page)]
 
-    post = {}
-    for item in posts.query.all():
-        if post.has_key(item.date):
-            user_info = users.query.filter_by(id=item.authorId).first()
-            user_name = user_info.name
-            post[item.date].append(
-                {'id': item.id, 'body': item.body, 'title': item.title, 'authorId': item.authorId, 'user_name': user_name})
+
+@app.route('/')
+def index(page=1):
+    post = []
+    date_list = ['']
+    # post=>[{},{},{}......]
+    items, pagination = pageControl(posts.query.order_by(desc(posts.id)))
+    for item in items:
+        if date_list[-1] != item.date:
+            date_list.append(item.date)
+            date = item.date
         else:
-            post[item.date] = []
-        pagination = Pagination(page=page, total=len(post),per_page=2
-                            search=search, record_name='users')
-    return render_template('index.html', post=post,pagination=pagination)
+            date = ''
+        user_info = users.query.filter_by(id=item.authorId).first()
+        user_name = user_info.name
+        # if date is new,date=the date.or date=''
+        post.append({'date': date, 'id': item.id, 'body': item.body, 'title': item.title,
+                     'authorId': item.authorId, 'user_name': user_name})
+    return render_template('index.html', post=post, pagination=pagination)
 
 
 @app.route('/user/<authorId>')
 def userPage(authorId):
-    post = posts.query.filter_by(authorId=authorId).all()
+    items, pagination = pageControl(posts.query.filter_by(
+        authorId=authorId).order_by(desc(posts.id)))
+    post = items
     user_info = users.query.filter_by(id=authorId).first()
-    return render_template('user.html', post=post, user_info=user_info)
+    return render_template('user.html', post=post, user_info=user_info, pagination=pagination)
 
 
 @app.route('/date/<date>')
 def datePage(date):
-    post = posts.query.filter_by(date=date).all()
-    return render_template('date.html', post=post)
+    items, pagination = pageControl(posts.query.filter_by(date=date).order_by(
+        desc(posts.id)))
+    post = items
+    return render_template('date.html', post=post, pagination=pagination)
 
 
 @app.route('/post/<postId>')

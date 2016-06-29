@@ -2,29 +2,28 @@
 	{% block title %}
 	HOME
 	{% endblock %}
+
 	{% block content %}
 	{{ pagination.info }}
 	{{ pagination.links }}
-	{% for date in post%}
-		<a href="{{url_for('datePage',date=date)}}">
-			{{date}}
-		</a>
-		{% for item in post[date] %}
-			<div>
-				<div>
-				<a href="{{url_for('postPage',postId=item['id'])}}">
-					{{item['title']}}          
-				</a>
-				<br>
-				<a href="{{url_for('userPage',authorId=item['authorId'])}}">
-					{{item['user_name']}}
-				</a>
-				</div>
-				<div>
-					{{item['body']}}
-				</div>
-			</div>
-			
-		{% endfor %}
-	{% endfor %}
+<br>
+{% for item in post %}
+{% if item['date'] %}
+<h1>
+	<a href="{{url_for('datePage',date=item['date'])}}">{{item['date']}}</a>
+</h1>
+<br>
+{% endif %}
+<div>
+	<div>
+		<h4><a href="{{url_for('postPage',postId=item['id'])}}">{{item['title']}}</a></h4>
+		<br>
+		<h5><a href="{{url_for('userPage',authorId=item['authorId'])}}">{{item['user_name']}}</a></h5>
+	</div>
+	<div>{{item['body']}}</div>
+	<br>
+</div>
+{% endfor %}
+	
+	{{ pagination.links }}
 	{% endblock %}

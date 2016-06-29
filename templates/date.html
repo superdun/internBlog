@@ -3,6 +3,8 @@
 	HOME
 	{% endblock %}
 	{% block content %}
+	{{ pagination.info }}
+	{{ pagination.links }}
 		<h1 align="center">
 			{{post[0].date}} 实习日报汇总
 		</h1>
@@ -17,4 +19,6 @@
 			</p>
 		</div>
 		{% endfor %}
+	
+	{{ pagination.links }}
 	{% endblock %}
