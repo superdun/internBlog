@@ -24,6 +24,7 @@ class Posts(Base):
     authorId = Column(Integer)
     date = Column(String)
     status = Column(String)
+    tmstmp = Column(Integer)
 
 engine = create_engine(
     'mysql+mysqlconnector://root:password@localhost:3306/internBlog')

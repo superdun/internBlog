@@ -1,24 +1,30 @@
 {%extends "base.html"%}
 	{% block title %}
-	HOME
+	{{post[0]['user_name']}}
 	{% endblock %}
 	{% block content %}
-	{{ pagination.info }}
 	{{ pagination.links }}
-		<h1 align="center">
-			{{user_info.name}}-----{{user_info.department}}-----{{user_info.team}}
-		</h1>
-		{% for item in post %}
-		<div>
-			<a href="{{url_for('datePage',date=item.date)}}">{{item.date}}</a>
-			<a href="{{url_for('postPage',postId=item.id)}}">{{item.title}}</a>
-		</div>
-		<div>
-			<p>
-				{{item.body}}
-			</p>
-		</div>
-		{%endfor%}
+<h1 align="center">
+	{{post[0]['user_name']}}-----{{post[0]['department']}}-----{{post[0]['team']}}
+</h1>
+{% for item in post %}
+
+<div class="panel panel-default">
+	{% if item['date'] %}
+	<div class="panel-heading" id="{{item['date']}}">
+	{% else %}
+	<div class="panel-heading">
+	{% endif %}
+
+		<h4>
+			<a href="{{url_for('postPage',postId=item['id'])}}">{{item['title']}}</a>
+			<a class="pull-right" href="{{url_for('datePage',date=item['date'])}}">{{item['date']}}</a>
+		</h4>
+	</div>
+	<div class="panel-body">{{item.body}}</div>
+</div>
+{%endfor%}
 	
 	{{ pagination.links }}
+	{{ pagination.info }}
 	{% endblock %}

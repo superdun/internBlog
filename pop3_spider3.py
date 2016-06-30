@@ -6,6 +6,7 @@ from email.header import decode_header
 from email.utils import parseaddr
 import dbORM as db
 from sqlalchemy import and_
+import spiderConfig as config
 
 
 def get_info(msg):
@@ -15,8 +16,10 @@ def get_info(msg):
     name = decode_str(hdr)
     user = u'%s' % name
     date = decode_str(msg.get('Date', ''))
+    tmstmp = 0
     if decode_str(msg.get('Date', '')):
-        date = date_trans(decode_str(msg.get('Date', '')))
+        date = date_trans_Ymd(decode_str(msg.get('Date', '')))
+        tmstmp = date_trans_stamp(decode_str(msg.get('Date', '')))
     title = decode_str(msg.get('Subject', ''))
     content = ''
     if (msg.is_multipart()):
@@ -39,8 +42,8 @@ def get_info(msg):
                 content = content.decode(charset, 'ignore')
         else:
             content = 'error'
-        return {'username': user, 'date': date, 'content': content, 'title': title}
-    return {'username': user, 'date': date, 'content': content, 'title': title}
+        return {'username': user, 'date': date, 'tmstmp': tmstmp, 'content': content, 'title': title}
+    return {'username': user, 'date': date, 'tmstmp': tmstmp, 'content': content, 'title': title}
 
 
 def decode_str(s):
@@ -62,11 +65,17 @@ def guess_charset(msg):
     return charset
 
 
-def date_trans(timeStr):
+def date_trans_Ymd(timeStr):
     date = timeStr[:-6]
     date_tuple = time.strptime(date, '%a, %d %b %Y %H:%M:%S')
     date_format = time.strftime("%Y-%m-%d", date_tuple)
     return date_format
+
+
+def date_trans_stamp(timeStr):
+    date = timeStr[:-6]
+    date_tuple = time.strptime(date, '%a, %d %b %Y %H:%M:%S')
+    return int(time.mktime(date_tuple))
 
 
 def store_to_db(info):
@@ -76,20 +85,20 @@ def store_to_db(info):
         db.session.add(db.Users(name=info['username']))
         db.session.commit()
     have_post = db.session.query(db.Posts).filter(
-        and_(db.Posts.date == info['date'], db.Posts.body == info['content'])).all()
+        and_(db.Posts.tmstmp == info['tmstmp'], db.Posts.title== info['title'])).all()
     if len(have_post) != 0:
         print have_post[0].title
         return 'UPTODATE'
     print 'writing into db'
-    db.session.add(db.Posts(body=info['content'], date=info['date'], status='published', title=info[
+    db.session.add(db.Posts(body=info['content'], date=info['date'], tmstmp=info['tmstmp'], status='published', title=info[
                    'title'], authorId=db.session.query(db.Users).filter_by(name=info['username']).one().id))
     db.session.commit()
     db.session.close()
     return 'CONTINUE'
 
-if __name__ == "__main__":
-    email = "lidun@wallstreetcn.com"
-    password = 'Qw96163'
+def catchEmails():
+    email = config.USERNAME
+    password = config.PSW
     pop3_server = 'pop.exmail.qq.com'
 
     server = poplib.POP3(pop3_server)
@@ -104,12 +113,14 @@ if __name__ == "__main__":
 
     msg_list = []
     # print(mails)
-    for i in range(200, len(mails)+1):
-        print 'reading email list %d/%d' % (i, posts_amount)
+    for i in range(len(mails), 0, -1):
+        print 'reading email list %d/%d' % (len(mails) - i + 1, posts_amount)
         resp, lines, octets = server.retr(i)
         msg_content = '\r\n'.join(lines)
         msg = Parser().parsestr(msg_content)
         info = get_info(msg)
-        store_to_db(info)
-        print '%d/%d done' % (i, posts_amount)
+        if store_to_db(info)=='UPTODATE':
+            print "Refresh Done"
+            break
+        print '%d/%d done' % (len(mails) - i + 1, posts_amount)
     server.quit()

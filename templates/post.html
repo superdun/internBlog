@@ -1,18 +1,18 @@
 {%extends "base.html"%}
 	{% block title %}
-	HOME
+	POST-DETAIL
 	{% endblock %}
 	{% block content %}
-		<h1 align="center">
-			{{post.title}}
-		</h1>
-		<div>
-			<a href="{{url_for('userPage',authorId=post.authorId)}}" align="left">{{post.title}}</a>
-			<a href="{{url_for('datePage',date=post.date)}}">{{post.date}}</a>
-		</div>
-		<div>
-			<p>
-				{{post.body}}
-			</p>
-		</div>
-	{% endblock %}
+<h2 align="center">{{post.title}}</h2>
+<div class="panel panel-default">
+	<div class="panel panel-heading">
+	<h4>
+		<a href="{{url_for('userPage',authorId=post.authorId)}}" align="left">{{user_name}}</a>
+		<a href="{{url_for('datePage',date=post.date)}}" class="pull-right">{{post.date}}</a>
+	</h4>
+	</div>
+	<div class="panel-body">
+		<p>{{post.body}}</p>
+	</div>
+</div>
+{% endblock %}

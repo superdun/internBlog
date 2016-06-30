@@ -13,3 +13,10 @@
     padding: .1em .25em;
     font-size: 150%;
 }
+#side_bar {
+    position: fixed;
+}
+body {
+  position: relative;
+  padding-top: 70px; 
+}

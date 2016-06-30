@@ -4,26 +4,32 @@
 	{% endblock %}
 
 	{% block content %}
-	{{ pagination.info }}
 	{{ pagination.links }}
 <br>
 {% for item in post %}
 {% if item['date'] %}
 <h1>
-	<a href="{{url_for('datePage',date=item['date'])}}">{{item['date']}}</a>
+	<a href="{{url_for('datePage',date=item['date'])}}" id="{{item['date']}}">{{item['date']}}</a>
 </h1>
 <br>
 {% endif %}
 <div>
-	<div>
-		<h4><a href="{{url_for('postPage',postId=item['id'])}}">{{item['title']}}</a></h4>
-		<br>
-		<h5><a href="{{url_for('userPage',authorId=item['authorId'])}}">{{item['user_name']}}</a></h5>
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<h4>
+				<a href="{{url_for('postPage',postId=item['id'])}}">{{item['title']}}</a>
+				<a class="pull-right" href="{{url_for('userPage',authorId=item['authorId'])}}">{{item['user_name']}}</a>
+			</h4>
+		</div>
+
+		<div class="panel-body">
+
+			<div>{{item['body']}}</div>
+		</div>
 	</div>
-	<div>{{item['body']}}</div>
-	<br>
 </div>
 {% endfor %}
 	
 	{{ pagination.links }}
+	{{ pagination.info }}
 	{% endblock %}
