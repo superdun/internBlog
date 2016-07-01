@@ -1,0 +1,36 @@
+*** Starting uWSGI 2.0.13.1 (64bit) on [Fri Jul  1 09:58:43 2016] ***
+compiled with version: 4.8.4 on 01 July 2016 06:13:23
+os: Linux-3.13.0-55-generic #94-Ubuntu SMP Thu Jun 18 00:27:10 UTC 2015
+nodename: internsblog
+machine: x86_64
+clock source: unix
+pcre jit disabled
+detected number of CPU cores: 1
+current working directory: /root/opt/internBlog
+detected binary path: /usr/local/bin/uwsgi
+uWSGI running as root, you can use --uid/--gid/--chroot options
+*** WARNING: you are running uWSGI as root !!! (use the --uid flag) *** 
+your processes number limit is 15938
+your memory page size is 4096 bytes
+detected max file descriptor number: 1024
+lock engine: pthread robust mutexes
+thunder lock: disabled (you can enable it with --thunder-lock)
+uwsgi socket 0 bound to UNIX address 127.0.0.1 fd 3
+Python version: 2.7.6 (default, Jun 22 2015, 18:01:27)  [GCC 4.8.2]
+*** Python threads support is disabled. You can enable it with --enable-threads ***
+Python main interpreter initialized at 0xfc3550
+your server socket listen backlog is limited to 100 connections
+your mercy for graceful operations on workers is 60 seconds
+mapped 436608 bytes (426 KB) for 5 cores
+*** Operational MODE: preforking ***
+added /root/opt/internBlog/ to pythonpath.
+/usr/local/lib/python2.7/dist-packages/flask/exthook.py:71: ExtDeprecationWarning: Importing flask.ext.paginate is deprecated, use flask_paginate instead.
+  .format(x=modname), ExtDeprecationWarning
+WSGI app 0 (mountpoint='') ready in 1 seconds on interpreter 0xfc3550 pid: 26703 (default app)
+*** uWSGI is running in multiple interpreter mode ***
+spawned uWSGI master process (pid: 26703)
+spawned uWSGI worker 1 (pid: 26706, cores: 1)
+spawned uWSGI worker 2 (pid: 26707, cores: 1)
+spawned uWSGI worker 3 (pid: 26708, cores: 1)
+spawned uWSGI worker 4 (pid: 26709, cores: 1)
+spawned uWSGI worker 5 (pid: 26710, cores: 1)
