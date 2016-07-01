@@ -96,7 +96,7 @@ def store_to_db(info):
     db.session.close()
     return 'CONTINUE'
 
-def catchEmails():
+if __name__ == '__main__':
     email = config.USERNAME
     password = config.PSW
     pop3_server = 'pop.exmail.qq.com'
