@@ -2,7 +2,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Column, String, create_engine, Integer
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
-
+import spiderConfig
 Base = declarative_base()
 
 
@@ -26,8 +26,7 @@ class Posts(Base):
     status = Column(String)
     tmstmp = Column(Integer)
 
-engine = create_engine(
-    'mysql+mysqlconnector://root:password@localhost:3306/internBlog')
+engine = create_engine(spiderConfig.DBCONNECTOR)
 
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
