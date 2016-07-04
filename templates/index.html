@@ -4,15 +4,15 @@
 	{% endblock %}
 
 	{% block content %}
-	{{ pagination.links }}
 <br>
-{% for item in post %}
-{% if item['date'] %}
+{% for date in date_list %}
+
 <h1>
-	<a href="{{url_for('datePage',date=item['date'])}}" id="{{item['date']}}">{{item['date']}}</a>
+	<a href="{{url_for('datePage',date=date[0])}}" id="{{date[0]}}">{{date[0]}}</a>
 </h1>
 <br>
-{% endif %}
+{% if loop.index0==0 %}
+{% for item in post %}
 <div>
 	<div class="panel panel-default">
 		<div class="panel-heading">
@@ -24,12 +24,12 @@
 
 		<div class="panel-body">
 
-			<div>{{item['body']}}</div>
+			<div>{{item['body']|safe}}</div>
 		</div>
 	</div>
 </div>
 {% endfor %}
-	
-	{{ pagination.links }}
-	{{ pagination.info }}
+{% endif %}
+{% endfor %}
+
 	{% endblock %}

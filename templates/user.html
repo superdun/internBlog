@@ -21,7 +21,7 @@
 			<a class="pull-right" href="{{url_for('datePage',date=item['date'])}}">{{item['date']}}</a>
 		</h4>
 	</div>
-	<div class="panel-body">{{item.body}}</div>
+	<div class="panel-body">{{item.body|safe}}</div>
 </div>
 {%endfor%}
 	
