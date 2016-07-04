@@ -9,7 +9,7 @@ import dbORM as db
 from sqlalchemy import and_
 import spiderConfig as config
 
-
+poplib._MAXLINE=20480
 def get_info(msg):
 
     user = decode_str(msg.get('From', ''))
