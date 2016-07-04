@@ -34,3 +34,15 @@ spawned uWSGI worker 2 (pid: 26707, cores: 1)
 spawned uWSGI worker 3 (pid: 26708, cores: 1)
 spawned uWSGI worker 4 (pid: 26709, cores: 1)
 spawned uWSGI worker 5 (pid: 26710, cores: 1)
+...brutally killing workers...
+worker 1 buried after 3 seconds
+worker 2 buried after 3 seconds
+worker 3 buried after 3 seconds
+worker 4 buried after 3 seconds
+worker 5 buried after 3 seconds
+binary reloading uWSGI...
+chdir() to /root/opt/internBlog
+closing all non-uwsgi socket fds > 2 (max_fd = 1024)...
+found fd 3 mapped to socket 0 (127.0.0.1)
+running /usr/local/bin/uwsgi
+realpath() of app_uwsgi.xml failed: No such file or directory [core/utils.c line 3616]

@@ -89,7 +89,6 @@ def store_to_db(info):
     have_post = db.session.query(db.Posts).filter(
         and_(db.Posts.tmstmp == info['tmstmp'], db.Posts.title == info['title'])).all()
     if len(have_post) != 0:
-        print have_post[0].title
         return 'UPTODATE'
     print 'writing into db'
     db.session.add(db.Posts(body=info['content'].replace('\n','<br>'), date=info['date'], tmstmp=info['tmstmp'], status='published', title=info[
