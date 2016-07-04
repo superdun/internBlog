@@ -82,8 +82,24 @@ def make_post_by_date(Filter):
 
 @app.route('/')
 def index(page=1):
-    post, pagination = make_post_by_date(posts.query.filter_by())
-    return render_template('index.html', nav_status=1, post=post, pagination=pagination)
+    #post, pagination = make_post_by_date(posts.query.filter_by())
+    all_post = posts.query.order_by(desc(posts.tmstmp))
+    date_list = []
+    for item in all_post:
+        if (len(date_list) and date_list[-1][0] != item.date) or len(date_list) == 0:
+            post_num = len(posts.query.filter_by(date=item.date).all())
+            date_list.append([item.date, post_num])
+
+    post = []
+    last_post = posts.query.filter_by(
+        date=date_list[0][0]).order_by(desc(posts.tmstmp))
+    for item in last_post:
+        user_info = users.query.filter_by(id=item.authorId).first()
+        user_name = user_info.name
+        post.append({'date': item.date, 'id': item.id, 'body': item.body, 'title': item.title,
+                     'authorId': item.authorId, 'user_name': user_name})
+
+    return render_template('index.html', post=post, date_list=date_list)
 
 
 @app.route('/user/<authorId>')
@@ -117,4 +133,4 @@ def postPage(postId):
 
 if __name__ == '__main__':
     # app.run()
-    app.run(host='0.0.0.0',port=8080)
+    app.run(host='0.0.0.0', port=8080)

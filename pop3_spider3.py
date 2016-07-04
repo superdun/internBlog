@@ -1,3 +1,4 @@
+# coding=utf-8
 import poplib
 import email
 import time
@@ -20,7 +21,8 @@ def get_info(msg):
     if decode_str(msg.get('Date', '')):
         date = date_trans_Ymd(decode_str(msg.get('Date', '')))
         tmstmp = date_trans_stamp(decode_str(msg.get('Date', '')))
-    title = decode_str(msg.get('Subject', ''))
+    #title = decode_str(msg.get('Subject', ''))
+    title = u'%s %s 实习日报' % (user, date)
     content = ''
     if (msg.is_multipart()):
 
@@ -85,12 +87,12 @@ def store_to_db(info):
         db.session.add(db.Users(name=info['username']))
         db.session.commit()
     have_post = db.session.query(db.Posts).filter(
-        and_(db.Posts.tmstmp == info['tmstmp'], db.Posts.title== info['title'])).all()
+        and_(db.Posts.tmstmp == info['tmstmp'], db.Posts.title == info['title'])).all()
     if len(have_post) != 0:
         print have_post[0].title
         return 'UPTODATE'
     print 'writing into db'
-    db.session.add(db.Posts(body=info['content'], date=info['date'], tmstmp=info['tmstmp'], status='published', title=info[
+    db.session.add(db.Posts(body=info['content'].replace('\n','<br>'), date=info['date'], tmstmp=info['tmstmp'], status='published', title=info[
                    'title'], authorId=db.session.query(db.Users).filter_by(name=info['username']).one().id))
     db.session.commit()
     db.session.close()
@@ -119,7 +121,7 @@ if __name__ == '__main__':
         msg_content = '\r\n'.join(lines)
         msg = Parser().parsestr(msg_content)
         info = get_info(msg)
-        if store_to_db(info)=='UPTODATE':
+        if store_to_db(info) == 'UPTODATE':
             print "Refresh Done"
             break
         print '%d/%d done' % (len(mails) - i + 1, posts_amount)
