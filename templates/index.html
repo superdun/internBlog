@@ -8,7 +8,7 @@
 {% for date in date_list %}
 
 <h1>
-	<a href="{{url_for('datePage',date=date[0])}}" id="{{date[0]}}">{{date[0]}}</a>
+	<a href="{{url_for('datePage',date=date[0])}}" id="{{date[0]}}">{{date[0]}}     <span class="badge">{{date[1]}}</span></a>
 </h1>
 <br>
 {% if loop.index0==0 %}
