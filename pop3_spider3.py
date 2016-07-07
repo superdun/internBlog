@@ -9,7 +9,9 @@ import dbORM as db
 from sqlalchemy import and_
 import spiderConfig as config
 
-poplib._MAXLINE=20480
+poplib._MAXLINE = 20480
+
+
 def get_info(msg):
 
     user = decode_str(msg.get('From', ''))
@@ -80,6 +82,13 @@ def date_trans_stamp(timeStr):
     return int(time.mktime(date_tuple))
 
 
+def is_to_interns_group(msg):
+    target = decode_str(msg.get('To', ''))
+    if 'techinterns' not in target:
+        return False
+    else:
+        return True
+
 def store_to_db(info):
 
     user = db.session.query(db.Users).filter_by(name=info['username']).all()
@@ -91,7 +100,7 @@ def store_to_db(info):
     if len(have_post) != 0:
         return 'UPTODATE'
     print 'writing into db'
-    db.session.add(db.Posts(body=info['content'].replace('\n','<br>'), date=info['date'], tmstmp=info['tmstmp'], status='published', title=info[
+    db.session.add(db.Posts(body=info['content'].replace('\n', '<br>'), date=info['date'], tmstmp=info['tmstmp'], status='published', title=info[
                    'title'], authorId=db.session.query(db.Users).filter_by(name=info['username']).one().id))
     db.session.commit()
     db.session.close()
@@ -118,10 +127,13 @@ if __name__ == '__main__':
         print 'reading email list %d/%d' % (len(mails) - i + 1, posts_amount)
         resp, lines, octets = server.retr(i)
         msg_content = '\r\n'.join(lines)
-        msg = Parser().parsestr(msg_content)
-        info = get_info(msg)
-        if store_to_db(info) == 'UPTODATE':
-            print "Refresh Done"
-            break
+        msg = Parser().parsestr(msg_content) 
+        if is_to_interns_group(msg):
+            info = get_info(msg)
+            if store_to_db(info) == 'UPTODATE':
+                print "Refresh Done"
+                break
+        else:
+            print 'pass'
         print '%d/%d done' % (len(mails) - i + 1, posts_amount)
     server.quit()
